@@ -21,6 +21,7 @@ const userForm = document.querySelector('.login-form');
 const userBtn = document.querySelector('.login-btn');
 const inputLogin = document.querySelector("input[name='email']");
 const inputPassword = document.querySelector("input[name='password']");
+const list = document.querySelector('.todo');
 
 userForm.addEventListener('input', onSaveData);
 userForm.addEventListener('submit', onLogin);
@@ -33,6 +34,14 @@ function onSaveData(event) {
 }
 function onLogin(event) {
   event.preventDefault();
+  if (userBtn.textContent === 'Logout') {
+    userBtn.textContent = 'Login';
+    inputLogin.removeAttribute('readonly');
+    inputPassword.removeAttribute('readonly');
+    localStorage.removeItem('form-data');
+    list.style.display = 'none';
+    return;
+  }
   if (!data.email || !data.password) return alert('Fill all fields');
   if (data.email !== USER_DATA.email || data.password !== USER_DATA.password)
     return alert('Incorrect data');
@@ -44,4 +53,5 @@ function checkLog() {
   userBtn.textContent = 'Logout';
   inputLogin.setAttribute('readonly', true);
   inputPassword.setAttribute('readonly', true);
+  list.style.display = 'flex';
 }
