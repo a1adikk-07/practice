@@ -42,20 +42,31 @@ function getPopular(event) {
 }
 
 function onFormSearch(event) {
-	event.preventDefault()
-	const queryForm = event.target.elements.query.value.trim()
+	event.preventDefault();
+	const queryForm = event.target.elements.query.value.trim();
 	if (!queryForm) {
 		return Notify.info('enter something for search!');
 	}
-
-pagination.off('afterMove', getPopular);
-
+	refs.container.style.display = 'block';
+	pagination.off('afterMove', getPopular);
+	pagination.off('afterMove', getByQuery);
 	apiService.query = queryForm;
 	apiService.getImageByQuery(page).then(({ total, results }) => {
+		if (total === 0) return Notify.failure('Images not found!');
+		if (total <= 12) refs.container.style.display = 'none';
 		const markup = createGalleryCard(results);
-	refs.gallery.innerHTML = markup;
-	pagination.reset(total);
-	})
+		refs.gallery.innerHTML = markup;
+		pagination.reset(total);
+		Notify.success(`Founded ${total} images.`);
+	});
 	pagination.on('afterMove', getByQuery);
 }
 
+function getByQuery(event) {
+	const currentPage = event.page;
+	console.log(currentPage);
+	apiService.getImageByQuery(currentPage).then(({ results }) => {
+		const markup = createGalleryCard(results);
+		refs.gallery.innerHTML = markup;
+	});
+}
